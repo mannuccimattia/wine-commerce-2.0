@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Winemaker>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Denomination>
  */
-class WinemakerFactory extends Factory
+class DenominationFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -17,7 +17,7 @@ class WinemakerFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake('it_IT')->unique()->company()
+            'name' => strtoupper(fake()->unique()->lexify(str_repeat('?', rand(3, 4))))
         ];
     }
 }
