@@ -24,7 +24,8 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             WinemakerSeeder::class,
-            DenominationSeeder::class
+            DenominationSeeder::class,
+            RegionSeeder::class
         ]);
     }
 }
