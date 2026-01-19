@@ -23,9 +23,10 @@ class DatabaseSeeder extends Seeder
         // ]);
 
         $this->call([
+            RegionSeeder::class,
+            CategorySeeder::class,
             WinemakerSeeder::class,
-            DenominationSeeder::class,
-            RegionSeeder::class
+            DenominationSeeder::class
         ]);
     }
 }
