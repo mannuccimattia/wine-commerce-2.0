@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Denomination>
@@ -16,8 +17,11 @@ class DenominationFactory extends Factory
      */
     public function definition(): array
     {
+        $name = fake()->unique()->lexify(str_repeat('?', rand(3, 4)));
+
         return [
-            'name' => strtoupper(fake()->unique()->lexify(str_repeat('?', rand(3, 4))))
+            'name' => strtoupper($name),
+            'slug' => Str::slug($name)
         ];
     }
 }
