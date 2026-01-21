@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Models\Wine;
-use App\Http\Requests\StoreWineRequest;
-use App\Http\Requests\UpdateWineRequest;
+use Illuminate\Http\Request;
 
 class WineController extends Controller
 {
@@ -13,7 +13,15 @@ class WineController extends Controller
      */
     public function index()
     {
-        //
+        $wines = Wine::with('category', 'region', 'denomination', 'winemaker')
+            ->get();
+
+        return response()->json(
+            [
+                'success' => true,
+                'data' => $wines
+            ]
+        );
     }
 
     /**
@@ -27,7 +35,7 @@ class WineController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreWineRequest $request)
+    public function store(Request $request)
     {
         //
     }
@@ -37,13 +45,20 @@ class WineController extends Controller
      */
     public function show(Wine $wine)
     {
-        //
+        $wine->load('category', 'region', 'denomination', 'winemaker');
+
+        return response()->json(
+            [
+                'success' => true,
+                'data' => $wine
+            ]
+        );
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Wine $wine)
+    public function edit(string $id)
     {
         //
     }
@@ -51,7 +66,7 @@ class WineController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateWineRequest $request, Wine $wine)
+    public function update(Request $request, string $id)
     {
         //
     }
@@ -59,7 +74,7 @@ class WineController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Wine $wine)
+    public function destroy(string $id)
     {
         //
     }

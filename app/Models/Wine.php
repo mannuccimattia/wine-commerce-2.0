@@ -14,6 +14,15 @@ class Wine extends Model
     // Unguard everything from mass assignment
     protected $guarded = [];
 
+    /**
+     * Use slug as index key
+     * Comment to test with wine id
+     */
+    // public function getRouteKeyName()
+    // {
+    //     return 'slug';
+    // }
+
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
