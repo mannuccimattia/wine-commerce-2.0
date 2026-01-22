@@ -16,12 +16,7 @@ class WineController extends Controller
         $wines = Wine::with('category', 'region', 'denomination', 'winemaker')
             ->get();
 
-        return response()->json(
-            [
-                'success' => true,
-                'data' => $wines
-            ]
-        );
+        return $wines->toResourceCollection();
     }
 
     /**
@@ -47,12 +42,7 @@ class WineController extends Controller
     {
         $wine->load('category', 'region', 'denomination', 'winemaker');
 
-        return response()->json(
-            [
-                'success' => true,
-                'data' => $wine
-            ]
-        );
+        return $wine->toResource();
     }
 
     /**
