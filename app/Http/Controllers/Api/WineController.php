@@ -11,9 +11,17 @@ class WineController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $wines = Wine::with('category', 'region', 'denomination', 'winemaker')
+        $wines = Wine::query()
+            ->with('category', 'region', 'denomination', 'winemaker')
+            ->when($request->category, fn($q, $slug) => $q->ofCategory($slug))
+            ->when($request->min_price, function ($q, $min) use ($request) {
+                $q->priceBetween($min, $request->max_price ?? 500);
+            })
+            ->when($request->region, fn($q, $slug) => $q->fromRegion($slug))
+            ->when($request->winemaker, fn($q, $slug) => $q->fromWinemaker($slug))
+            ->when($request->denomination, fn($q, $slug) => $q->ofDenominaiton($slug))
             ->get();
 
         return $wines->toResourceCollection();
