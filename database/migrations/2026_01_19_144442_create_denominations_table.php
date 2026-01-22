@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('denominations', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
-            $table->string('slug')->unique()->index();
             $table->timestamps();
         });
     }

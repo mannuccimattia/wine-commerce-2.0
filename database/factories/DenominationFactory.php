@@ -21,7 +21,6 @@ class DenominationFactory extends Factory
 
         return [
             'name' => strtoupper($name),
-            'slug' => Str::slug($name)
         ];
     }
 }
