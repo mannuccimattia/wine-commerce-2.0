@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\HasSlugRouting;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -9,19 +10,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Wine extends Model
 {
     /** @use HasFactory<\Database\Factories\WineFactory> */
-    use HasFactory;
+    use HasFactory, HasSlugRouting;
 
     // Unguard everything from mass assignment
     protected $guarded = [];
-
-    /**
-     * Use slug as index key
-     * Comment to test with wine id
-     */
-    // public function getRouteKeyName()
-    // {
-    //     return 'slug';
-    // }
 
     public function category(): BelongsTo
     {
