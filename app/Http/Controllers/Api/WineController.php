@@ -15,6 +15,9 @@ class WineController extends Controller
     {
         $wines = Wine::query()
             ->with('category', 'region', 'denomination', 'winemaker')
+
+            ->search($request->query('search'))
+
             ->when($request->category, fn($q, $slug) => $q->ofCategory($slug))
             ->when($request->min_price, function ($q, $min) use ($request) {
                 $q->priceBetween($min, $request->max_price ?? 500);

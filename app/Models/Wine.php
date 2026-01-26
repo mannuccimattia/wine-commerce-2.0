@@ -17,6 +17,22 @@ class Wine extends Model
     // Unguard everything from mass assignment
     protected $guarded = [];
 
+    /** Search wines by name or winemaker. */
+    #[Scope]
+    protected function search(Builder $query, ?string $term): void
+    {
+        if (empty($term)) {
+            return;
+        }
+
+        $query->where(function ($q) use ($term) {
+            $q->where('name', 'like', "%{$term}%")
+                ->orWhereHas('winemaker', function ($subQuery) use ($term) {
+                    $subQuery->where('name', 'like', "%{$term}%");
+                });
+        });
+    }
+
     /** Filter wines by Category slug. */
     #[Scope]
     protected function ofCategory(Builder $query, string $slug): void
