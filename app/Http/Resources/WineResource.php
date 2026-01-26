@@ -31,9 +31,10 @@ class WineResource extends JsonResource
                 'slug' => $this->category->slug
             ],
             'grapes' => $this->grapes,
-            'price' => $this->price,
-            'alcohol' => $this->alcohol,
-            'bottle_size' => $this->bottle_size,
+            'price' => (float) $this->price,
+            'formatted_price' => number_format($this->price, 2, ',', '.') . ' €',
+            'alcohol' => (float) $this->alcohol,
+            'bottle_size' => (float) $this->bottle_size,
             'vintage' => $this->vintage,
             'temperature' => $this->temperature,
             'description' => $this->description,
