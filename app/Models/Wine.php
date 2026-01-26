@@ -52,6 +52,19 @@ class Wine extends Model
         $query->whereHas('denomination', fn($q) => $q->where('name', $name));
     }
 
+    /** Order results by requested column. */
+    #[Scope]
+    protected function sortBy(Builder $query, string $column, string $direction = 'asc'): void
+    {
+        $allowedColumns = ['price', 'vintage', 'name'];
+
+        $direction = strtolower($direction) === 'desc' ? 'desc' : 'asc';
+
+        if (in_array($column, $allowedColumns)) {
+            $query->orderBy($column, $direction);
+        }
+    }
+
     // Relations
     public function category(): BelongsTo
     {

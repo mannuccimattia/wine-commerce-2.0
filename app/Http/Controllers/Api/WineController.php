@@ -22,6 +22,12 @@ class WineController extends Controller
             ->when($request->region, fn($q, $slug) => $q->fromRegion($slug))
             ->when($request->winemaker, fn($q, $slug) => $q->fromWinemaker($slug))
             ->when($request->denomination, fn($q, $slug) => $q->ofDenominaiton($slug))
+
+            ->sortBy(
+                $request->input('sort', 'name'),
+                $request->input('direction', 'asc')
+            )
+
             ->get();
 
         return $wines->toResourceCollection();
