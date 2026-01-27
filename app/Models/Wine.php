@@ -21,15 +21,11 @@ class Wine extends Model
     #[Scope]
     protected function search(Builder $query, ?string $term): void
     {
-        if (empty($term)) {
-            return;
-        }
+        if (empty($term)) return;
 
         $query->where(function ($q) use ($term) {
             $q->where('name', 'like', "%{$term}%")
-                ->orWhereHas('winemaker', function ($subQuery) use ($term) {
-                    $subQuery->where('name', 'like', "%{$term}%");
-                });
+                ->orWhereHas('winemaker', fn($subQuery) => $subQuery->where('name', 'like', "%{$term}%"));
         });
     }
 

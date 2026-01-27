@@ -3,11 +3,32 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Denomination;
+use App\Models\Region;
 use App\Models\Wine;
 use Illuminate\Http\Request;
 
 class WineController extends Controller
 {
+    /**
+     * Get wines metadata for search interface.
+     */
+    public function filters()
+    {
+        return response()->json([
+            'data' => [
+                'regions' => Region::has('wines')->orderBy('name')->get(['name', 'slug']),
+
+                'denominations' => Denomination::orderBy('name')->pluck('name'),
+
+                'price_range' => [
+                    'min' => 0,
+                    'max' => (float) Wine::max('price')
+                ],
+            ]
+        ]);
+    }
+
     /**
      * Display a listing of the resource.
      */
