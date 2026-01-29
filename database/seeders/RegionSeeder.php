@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class RegionSeeder extends Seeder
 {
@@ -36,6 +37,13 @@ class RegionSeeder extends Seeder
             ['name' => 'Veneto']
         ];
 
-        DB::table('regions')->insert($regions);
+        foreach ($regions as $region) {
+            DB::table('regions')->insert([
+                'name' => $region['name'],
+                'slug' => Str::slug($region['name']),
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
+        }
     }
 }

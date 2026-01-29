@@ -3,26 +3,81 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use App\Traits\HasSlugRouting;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class Wine extends Model
 {
     /** @use HasFactory<\Database\Factories\WineFactory> */
-    use HasFactory;
+    use HasFactory, HasSlugRouting;
 
     // Unguard everything from mass assignment
     protected $guarded = [];
 
-    /**
-     * Use slug as index key
-     * Comment to test with wine id
-     */
-    // public function getRouteKeyName()
-    // {
-    //     return 'slug';
-    // }
+    /** Search wines by name or winemaker. */
+    #[Scope]
+    protected function search(Builder $query, ?string $term): void
+    {
+        if (empty($term)) return;
 
+        $query->where(function ($q) use ($term) {
+            $q->where('name', 'like', "%{$term}%")
+                ->orWhereHas('winemaker', fn($subQuery) => $subQuery->where('name', 'like', "%{$term}%"));
+        });
+    }
+
+    /** Filter wines by Category slug. */
+    #[Scope]
+    protected function ofCategory(Builder $query, string $slug): void
+    {
+        $query->whereHas('category', fn($q) => $q->where('slug', $slug));
+    }
+
+    /** Filter wines between a Price range. */
+    #[Scope]
+    protected function priceBetween(Builder $query, float $min, float $max): void
+    {
+        $query->whereBetween('price', [$min, $max]);
+    }
+
+    /** Filter wines by Region slug. */
+    #[Scope]
+    protected function fromRegion(Builder $query, string $slug): void
+    {
+        $query->whereHas('region', fn($q) => $q->where('slug', $slug));
+    }
+
+    /** Filter wines by Winemaker slug. */
+    #[Scope]
+    protected function fromWinemaker(Builder $query, string $slug): void
+    {
+        $query->whereHas('winemaker', fn($q) => $q->where('slug', $slug));
+    }
+
+    /** Filter wines by Denomination name. */
+    #[Scope]
+    protected function ofDenomination(Builder $query, string $name): void
+    {
+        $query->whereHas('denomination', fn($q) => $q->where('name', $name));
+    }
+
+    /** Order results by requested column. */
+    #[Scope]
+    protected function sortBy(Builder $query, string $column, string $direction = 'asc'): void
+    {
+        $allowedColumns = ['price', 'vintage', 'name'];
+
+        $direction = strtolower($direction) === 'desc' ? 'desc' : 'asc';
+
+        if (in_array($column, $allowedColumns)) {
+            $query->orderBy($column, $direction);
+        }
+    }
+
+    // Relations
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
