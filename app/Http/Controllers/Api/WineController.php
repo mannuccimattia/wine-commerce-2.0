@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
 use App\Models\Denomination;
 use App\Models\Region;
 use App\Models\Wine;
@@ -17,13 +18,15 @@ class WineController extends Controller
     {
         return response()->json([
             'data' => [
+                'categories' => Category::orderBy('name')->get(['name', 'slug']),
+
                 'regions' => Region::has('wines')->orderBy('name')->get(['name', 'slug']),
 
                 'denominations' => Denomination::orderBy('name')->pluck('name'),
 
                 'price_range' => [
                     'min' => 0,
-                    'max' => (float) Wine::max('price')
+                    'max' => (int) (ceil((Wine::max('price') ?: 100) / 100) * 100)
                 ],
             ]
         ]);
@@ -37,15 +40,28 @@ class WineController extends Controller
         $wines = Wine::query()
             ->with('category', 'region', 'denomination', 'winemaker')
 
+            // Textbar Search (Name and/or Winemaker).
             ->search($request->query('search'))
 
+            // Category Filter.
             ->when($request->category, fn($q, $slug) => $q->ofCategory($slug))
-            ->when($request->min_price, function ($q, $min) use ($request) {
-                $q->priceBetween($min, $request->max_price ?? 500);
+
+            // Price range Filter.
+            ->when($request->has('min_price') || $request->has('max_price'), function ($q) use ($request) {
+                $q->priceBetween(
+                    $request->float('min_price', 0),
+                    $request->float('max_price')
+                );
             })
+
+            // Region Filter.
             ->when($request->region, fn($q, $slug) => $q->fromRegion($slug))
+
+            // Winemaker Filter.
             ->when($request->winemaker, fn($q, $slug) => $q->fromWinemaker($slug))
-            ->when($request->denomination, fn($q, $slug) => $q->ofDenominaiton($slug))
+
+            // Denomination Filter.
+            ->when($request->denomination, fn($q, $slug) => $q->ofDenomination($slug))
 
             ->sortBy(
                 $request->input('sort', 'name'),
